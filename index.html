@@ -3,43 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Big O Notation — A Field Guide to Time Complexity</title>
-<meta name="description" content="An interactive field guide to Big O notation and time complexity, with a live growth-rate chart and a reference table of common operations.">
+<title>Big O Notation — Explained Simply</title>
+<meta name="description" content="Big O notation explained with everyday examples like phone books and handshakes, plus a live chart comparing how fast different approaches slow down.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0d2438;
-    --bg-panel: #123252;
-    --bg-panel-2: #0f2b45;
-    --grid-line: rgba(234,242,250,0.06);
-    --grid-line-strong: rgba(234,242,250,0.14);
-    --ink: #eaf2fa;
-    --ink-dim: #9fb6cd;
-    --ink-dimmer: #6f8aa5;
-    --cyan: #5ec8d8;
-    --teal: #4fb286;
-    --amber: #e8a33d;
-    --orange: #e2683a;
-    --red: #d6455b;
-    --muted: #8fa8c2;
+    --bg: #ffffff;
+    --panel: #fafafa;
+    --line: #e4e4e4;
+    --line-strong: #d0d0d0;
+    --ink: #141414;
+    --ink-dim: #4a4a4a;
+    --ink-dimmer: #8a8a8a;
     --radius: 3px;
   }
 
   * { box-sizing: border-box; }
-
   html { scroll-behavior: smooth; }
 
   body{
     margin: 0;
-    background:
-      repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 24px),
-      repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 24px),
-      var(--bg);
+    background: var(--bg);
     color: var(--ink);
     font-family: 'IBM Plex Sans', sans-serif;
-    line-height: 1.6;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -48,30 +37,27 @@
     html{ scroll-behavior: auto; }
   }
 
-  a { color: var(--cyan); }
+  a { color: var(--ink); }
   a:focus-visible, button:focus-visible, input:focus-visible {
-    outline: 2px solid var(--cyan);
+    outline: 2px solid var(--ink);
     outline-offset: 3px;
   }
 
   .wrap{
-    max-width: 1080px;
+    max-width: 1040px;
     margin: 0 auto;
     padding: 0 24px;
   }
 
   /* ---------- corner-bracket motif ---------- */
-  .bracketed{
-    position: relative;
-  }
+  .bracketed{ position: relative; }
   .bracketed::before, .bracketed::after,
   .bracketed .br-tr, .bracketed .br-bl{
     content: "";
     position: absolute;
     width: 14px;
     height: 14px;
-    border: 1.5px solid var(--ink-dimmer);
-    opacity: 0.7;
+    border: 1.5px solid var(--line-strong);
   }
   .bracketed::before{ top: -1px; left: -1px; border-right: none; border-bottom: none; }
   .bracketed .br-tr{ top: -1px; right: -1px; border-left: none; border-bottom: none; }
@@ -81,7 +67,7 @@
   /* ---------- header ---------- */
   header{
     padding: 20px 0;
-    border-bottom: 1px solid var(--grid-line-strong);
+    border-bottom: 1px solid var(--line-strong);
   }
   .nav-row{
     display: flex;
@@ -90,32 +76,26 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 13px;
     color: var(--ink-dim);
-    letter-spacing: 0.02em;
-  }
-  .nav-row .tag{
-    color: var(--cyan);
   }
 
   /* ---------- hero ---------- */
-  .hero{
-    padding: 64px 0 40px;
-  }
+  .hero{ padding: 64px 0 40px; }
   .eyebrow{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 13px;
-    color: var(--cyan);
-    letter-spacing: 0.12em;
+    color: var(--ink-dimmer);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     margin: 0 0 18px;
   }
   h1{
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 600;
-    font-size: clamp(32px, 5vw, 56px);
-    line-height: 1.08;
+    font-size: clamp(30px, 5vw, 50px);
+    line-height: 1.12;
     margin: 0 0 20px;
     letter-spacing: -0.01em;
-    max-width: 18ch;
+    max-width: 20ch;
   }
   .hero p.lede{
     font-size: 18px;
@@ -123,12 +103,20 @@
     max-width: 62ch;
     margin: 0 0 8px;
   }
+  .hero code.inline, p code.inline{
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-size: 0.9em;
+  }
 
-  /* ---------- chart panel (signature element) ---------- */
+  /* ---------- chart panel ---------- */
   .chart-panel{
     margin-top: 48px;
-    background: var(--bg-panel);
-    border: 1px solid var(--grid-line-strong);
+    background: var(--panel);
+    border: 1px solid var(--line-strong);
     padding: 28px 28px 20px;
   }
   .chart-panel-head{
@@ -153,7 +141,7 @@
     font-size: 15px;
     color: var(--ink);
   }
-  .n-readout strong{ color: var(--cyan); font-size: 18px; }
+  .n-readout strong{ font-size: 18px; }
 
   .slider-row{
     display: flex;
@@ -166,7 +154,7 @@
     -webkit-appearance: none;
     appearance: none;
     height: 2px;
-    background: var(--grid-line-strong);
+    background: var(--line-strong);
     border-radius: 2px;
     outline-offset: 6px;
   }
@@ -175,19 +163,19 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: var(--cyan);
+    background: var(--ink);
     cursor: pointer;
-    border: 3px solid var(--bg-panel);
-    box-shadow: 0 0 0 1px var(--cyan);
+    border: 3px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--ink);
   }
   input[type="range"]::-moz-range-thumb{
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: var(--cyan);
+    background: var(--ink);
     cursor: pointer;
-    border: 3px solid var(--bg-panel);
-    box-shadow: 0 0 0 1px var(--cyan);
+    border: 3px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--ink);
   }
   .slider-label{
     font-family: 'IBM Plex Mono', monospace;
@@ -196,30 +184,11 @@
     white-space: nowrap;
   }
 
-  #chartSvg{
-    width: 100%;
-    height: auto;
-    display: block;
-    margin-top: 8px;
-  }
-  .axis-label{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    fill: var(--ink-dimmer);
-  }
-  .curve{
-    fill: none;
-    stroke-width: 2;
-  }
-  .marker-line{
-    stroke: var(--grid-line-strong);
-    stroke-width: 1;
-    stroke-dasharray: 3 3;
-  }
-  .marker-dot{
-    stroke: var(--bg-panel);
-    stroke-width: 2;
-  }
+  #chartSvg{ width: 100%; height: auto; display: block; margin-top: 8px; }
+  .axis-label{ font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: var(--ink-dimmer); }
+  .curve{ fill: none; stroke-width: 2; }
+  .marker-line{ stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+  .marker-dot{ stroke: var(--panel); stroke-width: 2; }
 
   .legend{
     display: flex;
@@ -227,7 +196,7 @@
     gap: 10px 20px;
     margin-top: 4px;
     padding-top: 16px;
-    border-top: 1px solid var(--grid-line);
+    border-top: 1px solid var(--line);
   }
   .legend-item{
     display: flex;
@@ -238,51 +207,46 @@
     color: var(--ink-dim);
   }
   .swatch{
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
+    width: 18px;
+    height: 3px;
     flex-shrink: 0;
   }
-  .legend-item .val{
-    color: var(--ink);
-    margin-left: 2px;
-  }
+  .legend-item .val{ color: var(--ink); margin-left: 2px; }
 
   /* ---------- sections ---------- */
-  section{ padding: 72px 0; }
-  section.divider-top{ border-top: 1px solid var(--grid-line-strong); }
+  section{ padding: 68px 0; }
+  section.divider-top{ border-top: 1px solid var(--line-strong); }
 
   .section-head{ margin-bottom: 40px; max-width: 68ch; }
   .section-head .eyebrow{ margin-bottom: 12px; }
   .section-head h2{
     font-family: 'IBM Plex Mono', monospace;
-    font-size: clamp(24px, 3vw, 32px);
+    font-size: clamp(22px, 3vw, 30px);
     margin: 0 0 14px;
     font-weight: 600;
   }
-  .section-head p{
-    color: var(--ink-dim);
-    font-size: 16px;
-    margin: 0;
-  }
+  .section-head p{ color: var(--ink-dim); font-size: 16px; margin: 0; }
 
   /* ---------- class cards ---------- */
   .class-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
   }
   .class-card{
-    background: var(--bg-panel);
+    background: var(--panel);
     padding: 24px 22px;
     position: relative;
-    border-top: 3px solid var(--card-color, var(--cyan));
+    border-top: 3px solid var(--card-color, #141414);
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
   }
   .class-card .notation{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 22px;
     font-weight: 600;
-    color: var(--card-color, var(--cyan));
+    color: var(--ink);
     margin: 0 0 4px;
   }
   .class-card .class-name{
@@ -293,38 +257,34 @@
     color: var(--ink-dimmer);
     margin: 0 0 16px;
   }
-  .class-card p{
+  .class-card .story{
+    font-size: 14.5px;
+    color: var(--ink);
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+  }
+  .class-card .story .label{
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-dimmer);
+    margin-bottom: 6px;
+  }
+  .class-card p.explain{
     font-size: 14.5px;
     color: var(--ink-dim);
     margin: 0 0 14px;
   }
-  .class-card code{
-    display: block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-    background: rgba(0,0,0,0.18);
-    color: var(--ink);
-    padding: 10px 12px;
-    margin-bottom: 14px;
-    overflow-x: auto;
-    white-space: pre;
-    border-left: 2px solid var(--grid-line-strong);
-  }
-  .class-card .examples{
-    font-size: 13px;
-    color: var(--ink-dimmer);
-    margin: 0;
-  }
-  .class-card .examples strong{ color: var(--muted); font-weight: 500; }
+  .class-card .examples{ font-size: 13px; color: var(--ink-dimmer); margin: 0; }
+  .class-card .examples strong{ color: var(--ink-dim); font-weight: 500; }
 
   /* ---------- table ---------- */
   .table-scroll{ overflow-x: auto; }
-  table{
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14.5px;
-    min-width: 640px;
-  }
+  table{ width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 640px; }
   thead th{
     text-align: left;
     font-family: 'IBM Plex Mono', monospace;
@@ -334,28 +294,22 @@
     color: var(--ink-dimmer);
     font-weight: 500;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--grid-line-strong);
+    border-bottom: 1px solid var(--line-strong);
   }
-  tbody td{
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--grid-line);
-    color: var(--ink-dim);
-  }
-  tbody tr:hover{ background: rgba(234,242,250,0.03); }
+  tbody td{ padding: 14px 16px; border-bottom: 1px solid var(--line); color: var(--ink-dim); }
+  tbody tr:hover{ background: var(--panel); }
   tbody td:first-child{ color: var(--ink); font-weight: 500; }
   .complexity-tag{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 13px;
     padding: 2px 8px;
     border-radius: 2px;
+    border: 1px solid var(--line-strong);
     display: inline-block;
   }
 
   /* ---------- footer ---------- */
-  footer{
-    border-top: 1px solid var(--grid-line-strong);
-    padding: 40px 0 60px;
-  }
+  footer{ border-top: 1px solid var(--line-strong); padding: 40px 0 60px; }
   footer .foot-row{
     display: flex;
     justify-content: space-between;
@@ -366,7 +320,7 @@
     color: var(--ink-dimmer);
   }
   footer a{ color: var(--ink-dim); text-decoration: none; }
-  footer a:hover{ color: var(--cyan); }
+  footer a:hover{ color: var(--ink); text-decoration: underline; }
   .resources{ margin-bottom: 28px; }
   .resources h3{
     font-family: 'IBM Plex Mono', monospace;
@@ -379,12 +333,11 @@
   }
   .resources ul{ list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
   .resources li::before{ content: "→ "; color: var(--ink-dimmer); }
-  .resources a{ font-size: 14.5px; color: var(--ink-dim); }
-  .resources a:hover{ color: var(--cyan); }
+  .resources a{ font-size: 14.5px; }
 
   @media (max-width: 640px){
     .chart-panel{ padding: 20px 16px 16px; }
-    section{ padding: 52px 0; }
+    section{ padding: 48px 0; }
   }
 </style>
 </head>
@@ -392,7 +345,7 @@
 
 <header>
   <div class="wrap nav-row">
-    <span><span class="tag">§</span> Big O Field Guide</span>
+    <span>§ Big O Field Guide</span>
     <span>Time Complexity, Visualized</span>
   </div>
 </header>
@@ -400,14 +353,15 @@
 <main>
   <div class="wrap">
     <section class="hero">
-      <p class="eyebrow">Algorithm analysis, plotted</p>
+      <p class="eyebrow">Explained with everyday examples</p>
       <h1>How your code slows down as the input grows.</h1>
-      <p class="lede">Big O notation describes the shape of that slowdown, not its exact speed. Drag the slider below and watch six common growth rates pull apart as <code style="font-family:'IBM Plex Mono',monospace;background:rgba(0,0,0,0.18);padding:1px 6px;border-radius:2px;">n</code> increases.</p>
+      <p class="lede">Imagine you're looking for a name in a phone book. Depending on <em>how</em> you search, finding one name in a book of 20 pages versus a book of 2,000 pages can feel exactly the same — or a thousand times harder. Big O notation is just a way to describe that difference.</p>
+      <p class="lede">Drag the slider below and watch six ways of "searching" pull apart as the pile of stuff (<code class="inline">n</code>) gets bigger.</p>
 
       <div class="chart-panel bracketed">
         <span class="br-tr"></span><span class="br-bl"></span>
         <div class="chart-panel-head">
-          <h2>Operations required, by input size</h2>
+          <h2>Steps needed, as the pile grows</h2>
           <div class="n-readout">n = <strong id="nValue">10</strong> items</div>
         </div>
 
@@ -428,73 +382,58 @@
     <section class="divider-top" id="classes">
       <div class="section-head">
         <p class="eyebrow">The six you'll actually meet</p>
-        <h2>Complexity classes, plainly explained</h2>
-        <p>Ordered from calmest to most alarming. The color of each card tracks its position on that scale — the same cool-to-warm gradient as the chart above.</p>
+        <h2>Six ways of "looking for something," explained simply</h2>
+        <p>Same six complexity classes as the chart above, each with a story a ten-year-old could follow. Cards run from calmest (top border, lightest) to most alarming (darkest).</p>
       </div>
 
       <div class="class-grid">
 
-        <div class="class-card" style="--card-color:#8fa8c2">
+        <div class="class-card" style="--card-color:#c7c7c7">
           <p class="notation">O(1)</p>
-          <p class="class-name">Constant time</p>
-          <p>Takes the same number of steps no matter how big the input is. Adding a thousand more items costs nothing extra.</p>
-          <code>arr[5]              // array index
-map.get(key)        // hash lookup
-stack.push(x)       // push/pop</code>
-          <p class="examples"><strong>Common in:</strong> array indexing, hash map get/set, stack push/pop, checking if a number is even.</p>
+          <p class="class-name">Constant time — "instant"</p>
+          <div class="story"><span class="label">The story</span>Someone sticks a note on the phone book cover: "Mom is on page 5." You flip straight there. It doesn't matter if the book has 10 pages or 10,000 — you still get there in one move.</div>
+          <p class="explain">The size of the pile never matters. One step, always.</p>
+          <p class="examples"><strong>Real examples:</strong> grabbing item #5 from a list, checking a locker by its number, looking up a word you already know the page number for.</p>
         </div>
 
-        <div class="class-card" style="--card-color:#5ec8d8">
+        <div class="class-card" style="--card-color:#9e9e9e">
           <p class="notation">O(log n)</p>
-          <p class="class-name">Logarithmic time</p>
-          <p>Each step throws away a chunk of the remaining input, usually half. Doubling the input only adds one extra step.</p>
-          <code>while (low <= high) {
-  mid = (low+high) / 2
-  // narrow to one half
-}</code>
-          <p class="examples"><strong>Common in:</strong> binary search, balanced binary search trees, finding an element's position in a sorted array.</p>
+          <p class="class-name">Logarithmic time — "guess and narrow down"</p>
+          <div class="story"><span class="label">The story</span>You're hunting for "Tom" in a phone book sorted A-to-Z. You open to the middle. Too early — throw away that whole half. Open the middle of what's left. Too late — throw away that half too. Keep halving until you land on "Tom."</div>
+          <p class="explain">Each guess throws away half the remaining pile. A million names? About 20 guesses.</p>
+          <p class="examples"><strong>Real examples:</strong> guessing a number between 1-100 by always asking "higher or lower," binary search, finding a word in a real dictionary.</p>
         </div>
 
-        <div class="class-card" style="--card-color:#4fb286">
+        <div class="class-card" style="--card-color:#6e6e6e">
           <p class="notation">O(n)</p>
-          <p class="class-name">Linear time</p>
-          <p>Steps grow one-to-one with input size. Touch every item once and you're here — the most common complexity of all.</p>
-          <code>for item in list:
-  total += item</code>
-          <p class="examples"><strong>Common in:</strong> linear search, printing an array, copying a list, finding the max of an unsorted collection.</p>
+          <p class="class-name">Linear time — "check every page"</p>
+          <div class="story"><span class="label">The story</span>Now the phone book is NOT sorted — names are scribbled in random order. To find "Tom," you must check every single page until you spot it. No shortcuts.</div>
+          <p class="explain">Twice the pile means twice the work. The effort grows exactly as fast as the pile does.</p>
+          <p class="examples"><strong>Real examples:</strong> reading every book on a shelf to find one title, counting every kid in a lunch line, scanning a messy list for a name.</p>
         </div>
 
-        <div class="class-card" style="--card-color:#e8a33d">
+        <div class="class-card" style="--card-color:#4a4a4a">
           <p class="notation">O(n log n)</p>
-          <p class="class-name">Linearithmic time</p>
-          <p>One linear pass, repeated across log n layers of splitting. The best you can generally do for comparison-based sorting.</p>
-          <code>function mergeSort(arr) {
-  split in half         // log n layers
-  sort each half        // recursive
-  merge (n work)        // per layer
-}</code>
-          <p class="examples"><strong>Common in:</strong> merge sort, quicksort (average case), heap sort, most "sort it then work with it" algorithms.</p>
+          <p class="class-name">Linearithmic time — "tidy up, then search"</p>
+          <div class="story"><span class="label">The story</span>Before looking anything up, you spend time putting the messy phone book in A-to-Z order first. That tidying costs a bit more than one plain pass through the pile — but once it's sorted, every future search becomes the fast "guess and narrow" kind.</div>
+          <p class="explain">A little more work than O(n) up front, in exchange for much faster searches later.</p>
+          <p class="examples"><strong>Real examples:</strong> alphabetizing a bookshelf, sorting a deck of cards before dealing, most "sort the list" tools on a computer.</p>
         </div>
 
-        <div class="class-card" style="--card-color:#e2683a">
+        <div class="class-card" style="--card-color:#242424">
           <p class="notation">O(n²)</p>
-          <p class="class-name">Quadratic time</p>
-          <p>A loop inside a loop, each one running across the full input. Fine for small n, punishing once n reaches the thousands.</p>
-          <code>for i in list:
-  for j in list:
-    compare(i, j)</code>
-          <p class="examples"><strong>Common in:</strong> bubble sort, insertion sort, checking every pair in a collection, naive duplicate detection.</p>
+          <p class="class-name">Quadratic time — "everyone shakes everyone's hand"</p>
+          <div class="story"><span class="label">The story</span>Picture a classroom where every kid has to shake hands with every OTHER kid, exactly once. 10 kids means about 45 handshakes. 20 kids means about 190. Double the kids, and the handshakes roughly quadruple.</div>
+          <p class="explain">A loop inside a loop. Fine for a small classroom, chaos for a whole stadium.</p>
+          <p class="examples"><strong>Real examples:</strong> comparing every kid's height to every other kid's, checking every pair of puzzle pieces to see which two fit together.</p>
         </div>
 
-        <div class="class-card" style="--card-color:#d6455b">
+        <div class="class-card" style="--card-color:#000000">
           <p class="notation">O(2ⁿ)</p>
-          <p class="class-name">Exponential time</p>
-          <p>Every additional item doubles the work. Practical only for small n — the kind of growth that turns "instant" into "overnight."</p>
-          <code>function fib(n) {
-  if (n <= 1) return n
-  return fib(n-1) + fib(n-2)
-}</code>
-          <p class="examples"><strong>Common in:</strong> naive recursive Fibonacci, generating all subsets of a set, brute-force solutions to NP-hard problems.</p>
+          <p class="class-name">Exponential time — "the doubling coins"</p>
+          <div class="story"><span class="label">The story</span>Someone offers you a deal: "1 coin today. 2 tomorrow. Then 4, then 8, then 16" — doubling every day. It feels tiny for the first week. By day 20, a single day's coins would number over a million.</div>
+          <p class="explain">Starts sleepy, then explodes almost overnight. Adding just one more item can nearly double the work.</p>
+          <p class="examples"><strong>Real examples:</strong> trying every possible combination on a padlock, listing every possible team you could pick from a growing group of friends.</p>
         </div>
 
       </div>
@@ -504,7 +443,7 @@ stack.push(x)       // push/pop</code>
       <div class="section-head">
         <p class="eyebrow">Reference table</p>
         <h2>Complexity of everyday operations</h2>
-        <p>The complexity classes above, mapped onto the data structures and algorithms you reach for most often. Worst case, unless noted.</p>
+        <p>The six ideas above, mapped onto the data structures and algorithms programmers reach for most often. Worst case, unless noted.</p>
       </div>
 
       <div class="table-scroll">
@@ -544,13 +483,14 @@ stack.push(x)       // push/pop</code>
 
 <script>
 (function(){
+  // grayscale, ordered calmest -> most alarming, distinguished by dash pattern too
   const classes = [
-    { key: '1',      label: 'O(1)',       color: '#8fa8c2', fn: n => 1 },
-    { key: 'logn',   label: 'O(log n)',   color: '#5ec8d8', fn: n => Math.log2(n) },
-    { key: 'n',      label: 'O(n)',       color: '#4fb286', fn: n => n },
-    { key: 'nlogn',  label: 'O(n log n)', color: '#e8a33d', fn: n => n * Math.log2(n) },
-    { key: 'n2',     label: 'O(n\u00B2)', color: '#e2683a', fn: n => n * n },
-    { key: '2n',     label: 'O(2\u207F)', color: '#d6455b', fn: n => Math.pow(2, n) },
+    { key: '1',      label: 'O(1)',       color: '#c7c7c7', dash: '',        fn: n => 1 },
+    { key: 'logn',   label: 'O(log n)',   color: '#9e9e9e', dash: '',        fn: n => Math.log2(n) },
+    { key: 'n',      label: 'O(n)',       color: '#6e6e6e', dash: '6 3',     fn: n => n },
+    { key: 'nlogn',  label: 'O(n log n)', color: '#4a4a4a', dash: '2 3',     fn: n => n * Math.log2(n) },
+    { key: 'n2',     label: 'O(n\u00B2)', color: '#242424', dash: '8 3 2 3', fn: n => n * n },
+    { key: '2n',     label: 'O(2\u207F)', color: '#000000', dash: '',        fn: n => Math.pow(2, n) },
   ];
 
   const N_MAX = 24;
@@ -582,25 +522,22 @@ stack.push(x)       // push/pop</code>
     return e;
   }
 
-  // gridlines (horizontal, log-scaled reference ticks)
   const ticks = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000];
   ticks.forEach(t => {
     if (t > maxVal) return;
     const y = yFor(t);
-    svg.appendChild(el('line', { x1: padL, x2: W - padR, y1: y, y2: y, stroke: 'var(--grid-line)', 'stroke-width': 1 }));
+    svg.appendChild(el('line', { x1: padL, x2: W - padR, y1: y, y2: y, stroke: 'var(--line)', 'stroke-width': 1 }));
     const label = el('text', { x: 4, y: y + 3, class: 'axis-label' });
     label.textContent = t >= 1000 ? (t/1000) + 'k' : t;
     svg.appendChild(label);
   });
 
-  // x axis labels
   [1, 6, 12, 18, 24].forEach(n => {
     const label = el('text', { x: xFor(n), y: H - 8, class: 'axis-label', 'text-anchor': 'middle' });
     label.textContent = 'n=' + n;
     svg.appendChild(label);
   });
 
-  // curves
   const paths = {};
   classes.forEach(c => {
     let d = '';
@@ -609,12 +546,13 @@ stack.push(x)       // push/pop</code>
       const y = yFor(c.fn(n));
       d += (n === 1 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
     }
-    const path = el('path', { d: d.trim(), class: 'curve', stroke: c.color });
+    const attrs = { d: d.trim(), class: 'curve', stroke: c.color };
+    if (c.dash) attrs['stroke-dasharray'] = c.dash;
+    const path = el('path', attrs);
     svg.appendChild(path);
     paths[c.key] = path;
   });
 
-  // marker line + dots
   const markerLine = el('line', { class: 'marker-line', y1: padT, y2: H - padB });
   svg.appendChild(markerLine);
 
@@ -625,7 +563,6 @@ stack.push(x)       // push/pop</code>
     dots[c.key] = dot;
   });
 
-  // legend
   const legend = document.getElementById('legend');
   const legendVals = {};
   classes.forEach(c => {
@@ -657,7 +594,7 @@ stack.push(x)       // push/pop</code>
       const y = yFor(val);
       dots[c.key].setAttribute('cx', x);
       dots[c.key].setAttribute('cy', y);
-      legendVals[c.key].textContent = fmt(val) + ' ops';
+      legendVals[c.key].textContent = fmt(val) + ' steps';
     });
   }
 
@@ -675,14 +612,11 @@ stack.push(x)       // push/pop</code>
     ['Binary search (on sorted array)', 'n/a', 'log n', 'n/a', 'n/a'],
   ];
 
-  const complexityColor = { '1': '#8fa8c2', 'log n': '#5ec8d8', 'n': '#4fb286', 'n log n': '#e8a33d', 'n\u00B2': '#e2683a', '2\u207F': '#d6455b' };
-
   function tag(v){
     if (v === 'n/a') return '<span style="color:var(--ink-dimmer)">—</span>';
     const clean = v.replace(/[*\s]/g, '');
-    const color = complexityColor[clean] || '#8fa8c2';
     const suffix = v.includes('*') ? v.slice(v.indexOf('*')) : '';
-    return '<span class="complexity-tag" style="background:'+color+'22;color:'+color+'">O('+clean+')</span>' + suffix;
+    return '<span class="complexity-tag">O('+clean+')</span>' + suffix;
   }
 
   const tbody = document.getElementById('opsTable');
