@@ -2,7 +2,7 @@
 
 A single-page, single-file site that explains Big O notation and time complexity using everyday examples (phone books, classroom handshakes, doubling coins) instead of jargon — plus a live chart you can drag to compare how six common complexity classes grow.
 
-**[View it live →](#)** *(update this link once GitHub Pages is enabled — see below)*
+**[View it live →](https://tuongphantrue.github.io/big-o-explained/)**
 
 ## What's inside
 
