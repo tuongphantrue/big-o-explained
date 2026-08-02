@@ -43,6 +43,18 @@
     outline-offset: 3px;
   }
 
+  .sr-only{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   .wrap{
     max-width: 1040px;
     margin: 0 auto;
@@ -182,6 +194,13 @@
     font-size: 13px;
     color: var(--ink-dimmer);
     white-space: nowrap;
+  }
+
+  .chart-scale-note{
+    margin: 8px 0 2px;
+    color: var(--ink-dimmer);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
   }
 
   #chartSvg{ width: 100%; height: auto; display: block; margin-top: 8px; }
@@ -367,15 +386,18 @@
 
         <div class="slider-row">
           <span class="slider-label">n=1</span>
-          <input type="range" id="nSlider" min="1" max="24" value="10" step="1" aria-label="Input size n">
+          <input type="range" id="nSlider" min="1" max="24" value="10" step="1" aria-label="Input size n" aria-describedby="chartScaleNote chartStatus">
           <span class="slider-label">n=24</span>
         </div>
 
-        <svg id="chartSvg" viewBox="0 0 760 320" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Chart comparing growth curves of common time complexities">
+        <p class="chart-scale-note" id="chartScaleNote">Y-axis: logarithmic scale. Each horizontal level represents roughly 10 times more steps.</p>
+
+        <svg id="chartSvg" viewBox="0 0 760 320" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Logarithmic chart comparing growth curves of common time complexities">
           <!-- populated by JS -->
         </svg>
 
         <div class="legend" id="legend"><!-- populated by JS --></div>
+        <p class="sr-only" id="chartStatus" role="status" aria-live="polite"></p>
       </div>
     </section>
 
@@ -448,6 +470,7 @@
 
       <div class="table-scroll">
         <table>
+          <caption class="sr-only">Worst-case time complexity of common data-structure operations, except where noted</caption>
           <thead>
             <tr>
               <th>Structure / algorithm</th>
@@ -581,6 +604,7 @@
 
   const slider = document.getElementById('nSlider');
   const nValue = document.getElementById('nValue');
+  const chartStatus = document.getElementById('chartStatus');
 
   function update(){
     const n = parseInt(slider.value, 10);
@@ -589,13 +613,16 @@
     markerLine.setAttribute('x1', x);
     markerLine.setAttribute('x2', x);
 
+    const announcedValues = [];
     classes.forEach(c => {
       const val = c.fn(n);
       const y = yFor(val);
       dots[c.key].setAttribute('cx', x);
       dots[c.key].setAttribute('cy', y);
       legendVals[c.key].textContent = fmt(val) + ' steps';
+      announcedValues.push(`${c.label}: ${fmt(val)} steps`);
     });
+    chartStatus.textContent = `At n ${n}. ${announcedValues.join('. ')}.`;
   }
 
   slider.addEventListener('input', update);
@@ -604,7 +631,7 @@
   // ---- operations table ----
   const rows = [
     ['Array', '1', 'n', 'n', 'n'],
-    ['Dynamic array (e.g. ArrayList)', '1', 'n', 'n *', '1'],
+    ['Dynamic array (e.g. ArrayList)', '1', 'n', 'n *', 'n *'],
     ['Linked list', 'n', 'n', '1 **', '1 **'],
     ['Hash map / hash set', 'n/a', '1 ***', '1 ***', '1 ***'],
     ['Balanced BST (e.g. red-black tree)', 'log n', 'log n', 'log n', 'log n'],
@@ -627,7 +654,7 @@
   });
 
   const note = document.createElement('tr');
-  note.innerHTML = '<td colspan="5" style="color:var(--ink-dimmer);font-size:12.5px;border-bottom:none;padding-top:6px;">* amortized, occasional resize costs more &nbsp;&nbsp; ** at a known position, given a reference to the node &nbsp;&nbsp; *** average case; worst case degrades to O(n) with heavy hash collisions</td>';
+  note.innerHTML = '<td colspan="5" style="color:var(--ink-dimmer);font-size:12.5px;border-bottom:none;padding-top:6px;">* general insertion/deletion is O(n); appending is O(1) amortized and deleting the last item is O(1) &nbsp;&nbsp; ** at a known position, given a reference to the node &nbsp;&nbsp; *** average case; worst case degrades to O(n) with heavy hash collisions</td>';
   tbody.appendChild(note);
 })();
 </script>

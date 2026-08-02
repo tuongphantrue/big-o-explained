@@ -6,7 +6,7 @@ A single-page, single-file site that explains Big O notation and time complexity
 
 ## What's inside
 
-- **Interactive chart** — a slider for input size `n` that shows, in real time, how many steps `O(1)`, `O(log n)`, `O(n)`, `O(n log n)`, `O(n²)`, and `O(2ⁿ)` each take.
+- **Interactive chart** — a slider for input size `n` that shows, in real time, how many steps `O(1)`, `O(log n)`, `O(n)`, `O(n log n)`, `O(n²)`, and `O(2ⁿ)` each take on a clearly labeled logarithmic scale.
 - **Plain-language explanations** — each complexity class paired with a simple real-world story.
 - **Reference table** — complexity of common operations (arrays, linked lists, hash maps, trees, heaps, binary search).
 
